@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -68,5 +69,43 @@ public class ClientRepositoryTest {
         Optional<Client> clienteObtido = repository.findByNameIgnoreCase(nomeNaoExistente);
         // assert
         assertTrue(clienteObtido.isEmpty());
+    }
+
+    /**
+     * Testa o método de busca de clientes pelo nome, ignorando maiúsculas e minúsculas.
+     * 
+     * <p>
+     * Este teste verifica se o repositório retorna uma lista não nula e não vazia de clientes
+     * cujo nome contém o termo de busca especificado, independentemente do caso das letras.
+     * Também garante que pelo menos um dos clientes retornados possui o termo de busca em seu nome.
+     * </p>
+     */
+    @Test
+    void testeBuscarClientesComPeloNomeExistentes(){
+        //assing
+        String termoBusca = "li";
+        //act
+        List<Client> clientes = repository.findByNameContainingIgnoreCase(termoBusca);
+        //assert
+        assertNotNull(clientes);
+        assertTrue(clientes.size() > 0);
+        assertTrue(clientes.stream().anyMatch(c -> c.getName().toLowerCase().contains(termoBusca)));
+    }
+    /**
+     * Testa a busca de clientes por um termo inexistente no nome.
+     * 
+     * Este teste verifica se a busca por um termo que não está presente em nenhum nome de cliente
+     * retorna uma lista vazia, garantindo que o método {@code findByNameContainingIgnoreCase}
+     * não encontra clientes quando o termo não existe no banco de dados.
+     */
+    @Test
+    void testeBuscarClientesPorTermoInexistente() {
+        // assign
+        String termoInexistente = "XYZTERMOQUENAOEXISTE";
+        // act
+        List<Client> clientes = repository.findByNameContainingIgnoreCase(termoInexistente);
+        // assert
+        assertNotNull(clientes);
+        assertTrue(clientes.isEmpty());
     }
 }

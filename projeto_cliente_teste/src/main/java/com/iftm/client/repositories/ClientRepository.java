@@ -11,4 +11,5 @@ import com.iftm.client.entities.Client;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByNameIgnoreCase(String nome);
+    List<Client> findByNameContainingIgnoreCase(String nome);
 }
