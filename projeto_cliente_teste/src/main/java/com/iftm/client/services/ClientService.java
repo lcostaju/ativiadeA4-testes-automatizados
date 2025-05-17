@@ -43,6 +43,7 @@ public class ClientService {
 		Client entity = obj.orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
 		return new ClientDTO(entity);
 	}
+ 
 	
 	@Transactional
 	public ClientDTO insert(ClientDTO dto) {
