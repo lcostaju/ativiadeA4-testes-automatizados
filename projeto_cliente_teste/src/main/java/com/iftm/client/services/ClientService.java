@@ -1,5 +1,6 @@
 package com.iftm.client.services;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
@@ -18,18 +19,20 @@ import com.iftm.client.repositories.ClientRepository;
 import com.iftm.client.services.exceptions.DatabaseException;
 import com.iftm.client.services.exceptions.ResourceNotFoundException;
 
+import java.util.List;
+
 @Service
 public class ClientService {
-	
+
 	@Autowired
 	private ClientRepository repository;
-	
+
 	@Transactional(readOnly = true)
 	public Page<ClientDTO> findAllPaged(PageRequest pageRequest) {
-		Page<Client> list =  repository.findAll(pageRequest);
+		Page<Client> list = repository.findAll(pageRequest);
 		return list.map(x -> new ClientDTO(x));
 	}
-	
+
 	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id) {
 		Optional<Client> obj = repository.findById(id);
@@ -38,20 +41,19 @@ public class ClientService {
 	}
 
 	@Transactional(readOnly = true)
-	public ClientDTO findByName(String nome){
+	public ClientDTO findByName(String nome) {
 		Optional<Client> obj = repository.findByNameIgnoreCase(nome);
 		Client entity = obj.orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
 		return new ClientDTO(entity);
 	}
- 
-	
+
 	@Transactional
 	public ClientDTO insert(ClientDTO dto) {
 		Client entity = dto.toEntity();
 		entity = repository.save(entity);
 		return new ClientDTO(entity);
 	}
-	
+
 	@Transactional
 	public ClientDTO update(Long id, ClientDTO dto) {
 		try {
@@ -63,7 +65,7 @@ public class ClientService {
 			throw new ResourceNotFoundException("Id not found " + id);
 		}
 	}
-	
+
 	public void delete(Long id) {
 		try {
 			repository.deleteById(id);
@@ -82,4 +84,28 @@ public class ClientService {
 		entity.setChildren(dto.getChildren());
 	}
 
+	@Transactional(readOnly = true)
+	public List<ClientDTO> findByIncomeGreaterThan(Double income) {
+		List<Client> list = repository.findByIncomeGreaterThan(income);
+		return list.stream().map(ClientDTO::new).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<ClientDTO> findByChildrenLessThan(Integer children) {
+		List<Client> list = repository.findByChildrenLessThan(children);
+		return list.stream().map(ClientDTO::new).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<ClientDTO> findByBirthDateBetween(Instant start, Instant end) {
+		List<Client> list = repository.findByBirthDateBetween(start, end);
+		return list.stream().map(ClientDTO::new).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public ClientDTO findByNameAndCpf(String name, String cpf) {
+		Optional<Client> obj = repository.findByNameIgnoreCaseAndCpf(name, cpf);
+		Client entity = obj.orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+		return new ClientDTO(entity);
+	}
 }
