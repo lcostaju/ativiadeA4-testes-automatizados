@@ -12,4 +12,8 @@ import com.iftm.client.entities.Client;
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByNameIgnoreCase(String nome);
     List<Client> findByNameContainingIgnoreCase(String nome);
+    List<Client> findByIncomeGreaterThan(Double income);
+    List<Client> findByChildrenLessThan(Integer children);
+    List<Client> findByBirthDateBetween(java.time.Instant start, java.time.Instant end);
+    Optional<Client> findByNameIgnoreCaseAndCpf(String name, String cpf);
 }
